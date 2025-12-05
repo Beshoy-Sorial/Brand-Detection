@@ -96,6 +96,7 @@ if __name__ == "__main__":
 
     # Load all logo descriptors
     if descriptores is None:
+        descriptores = {}
         for brand, paths in logos_paths.items():
             descriptores[brand] = []
             for path in paths:
