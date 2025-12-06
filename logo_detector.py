@@ -1,0 +1,2 @@
+class LogoDetector:
+    pass
