@@ -177,7 +177,7 @@ def method_two(image, descriptores):
         print(f"\n  Analyzing region {region_idx + 1}/{len(logo_regions)} at ({x}, {y}, {w}, {h})")
         
         # Compute SIFT features on this region
-        kp_roi, des_roi = sift.detectAndCompute(roi, None)
+        kp_roi, des_roi = sift.calc_sift(roi)
         
         if des_roi is None:
             print(f"    No descriptors found in region {region_idx + 1}")
@@ -192,9 +192,8 @@ def method_two(image, descriptores):
                     continue
                 
                 # Match with KNN
-                bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
-                knn_matches = bf.knnMatch(des_logo, des_roi, k=2)
-                
+                knn_matches = sift.match_descriptors(des_logo, des_roi)
+
                 # Lowe's ratio test
                 good = []
                 ratio_thresh = 0.6
@@ -219,8 +218,7 @@ def method_two(image, descriptores):
                     dst_pts_global[:, 0, 0] += x
                     dst_pts_global[:, 0, 1] += y
                     
-                    H, mask = cv2.findHomography(src_pts, dst_pts_global, cv2.RANSAC, 5.0)
-                    
+                    H, mask = homography.ran_sac(src_pts, dst_pts_global)
                     # Count only inliers (matches that fit the homography model)
                     if mask is not None:
                         inlier_count = int(mask.sum())
@@ -232,12 +230,6 @@ def method_two(image, descriptores):
                     best_region_coords = (x, y, w, h)
                     
                     
-                    # Store keypoints in global coordinates for visualization
-                    kp_roi_global = []
-                    for kp in kp_roi:
-                        kp_copy = cv2.KeyPoint(kp.pt[0] + x, kp.pt[1] + y, kp.size, 
-                                            kp.angle, kp.response, kp.octave, kp.class_id)
-                        kp_roi_global.append(kp_copy)
                     
     
     # Determine if it's a known brand or unknown based on threshold

@@ -17,4 +17,4 @@ def init(
 
 def calc_sift(image):
     """implement your solution and documnet this functoin"""
-    sift.detectAndCompute(image, None)
+    return sift.detectAndCompute(image, None)

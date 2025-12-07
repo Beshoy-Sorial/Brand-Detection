@@ -4,24 +4,10 @@ from pathlib import Path
 import numpy as np
 import socket
 import threading
-import pickle
 import logo_verifer
 
 descriptores = {}
 
-
-CACHE_FILE = "logo_descriptors.pkl"
-
-def save_descriptors_cache(descriptores):
-    with open(CACHE_FILE, 'wb') as f:
-        pickle.dump(descriptores, f)
-    print(f"Saved descriptors cache to {CACHE_FILE}")
-
-def load_descriptors_cache():
-    if Path(CACHE_FILE).exists():
-        with open(CACHE_FILE, 'rb') as f:
-            return pickle.load(f)
-    return None
 
 def load_logos(base_folder: str):
     logos_dict = {}
@@ -82,29 +68,25 @@ def send_result(conn, result_message):
     conn.sendall(result_message.encode('utf-8'))
 
 if __name__ == "__main__":
-    folder = "Logos"  
+    folder = "..\\Logos"  
     logos_paths = load_logos(folder)
     sift.init()
 
-    descriptores = load_descriptors_cache()
     
-    # Load all logo descriptors
-    if descriptores is None:
-        descriptores = {}
-        for brand, paths in logos_paths.items():
-            descriptores[brand] = []
-            for path in paths:
-                logo = cv2.imread(path)
-                
-                if logo is None:
-                    print(f"Error loading image: {path}")
-                    continue
+    descriptores = {}
+    for brand, paths in logos_paths.items():
+        descriptores[brand] = []
+        for path in paths:
+            logo = cv2.imread(path)
+            
+            if logo is None:
+                print(f"Error loading image: {path}")
+                continue
 
-                gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
-                kp_logo, des_logo = sift.calc_sift()
-                descriptores[brand].append((kp_logo, des_logo))
-                
-        save_descriptors_cache(descriptores)
+            gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
+            kp_logo, des_logo = sift.calc_sift(gray_logo)
+            descriptores[brand].append((kp_logo, des_logo))
+        
     
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  
