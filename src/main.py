@@ -50,8 +50,8 @@ def handle_client(conn, addr):
             print("Could not decode the image!")
             conn.sendall(b"ERROR: Could not decode image")
             return
-        
-        result = logo_verifer.verify_logo(cloth)
+
+        result = logo_verifer.verify_logo(cloth, descriptores)
         send_result(conn, result)
         
     except Exception as e:

@@ -192,7 +192,7 @@ def method_two(image, descriptores):
                     continue
                 
                 # Match with KNN
-                knn_matches = sift.match_descriptors(des_logo, des_roi)
+                knn_matches = matcher.knn_matches(des_logo, des_roi)
 
                 # Lowe's ratio test
                 good = []
