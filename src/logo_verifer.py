@@ -78,9 +78,10 @@ def method_one(image, descriptores):
                     m, n = match_pair
                     if m.distance < ratio_thresh * n.distance:
                         good.append(m)
+            print(f"Found {len(good)} good matches for {brand}")
             
             # Apply RANSAC to filter outliers if we have enough matches
-            inlier_count = len(good)
+            inlier_count = 0
             if len(good) >= MIN_MATCH_COUNT:
                 src_pts = np.float32([kp_logo[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
                 dst_pts = np.float32([kp_cloth[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
@@ -203,12 +204,13 @@ def method_two(image, descriptores):
                         m, n = match_pair
                         if m.distance < ratio_thresh * n.distance:
                             good.append(m)
+                print(f"Found {len(good)} good matches for {brand}")
                 
-                # Apply RANSAC to filter outliers if we have enough matches
-                inlier_count = len(good)
                 H = None
                 mask = None
-                
+            
+                # Apply RANSAC to filter outliers if we have enough matches
+                inlier_count = 0
                 if len(good) >= MIN_MATCH_COUNT:
                     src_pts = np.float32([kp_logo[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
                     dst_pts = np.float32([kp_roi[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
