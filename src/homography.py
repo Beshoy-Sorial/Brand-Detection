@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 
 def normalize_points(pts):
@@ -7,8 +6,9 @@ def normalize_points(pts):
     shifted = pts - centroid
     mean_dist = np.mean(np.sqrt(np.sum(shifted**2, axis=1)))
     
-    # Handle degenerate case where all points are identical
+    # Handle degenerate case (all points at same location)
     if mean_dist < 1e-8:
+        # Return identity-like transform
         return np.eye(3)
     
     scale = np.sqrt(2) / mean_dist
@@ -35,7 +35,12 @@ def apply_homography(H, pts):
     """Apply homography to points."""
     pts_h = np.column_stack([pts, np.ones(len(pts))])
     transformed = (H @ pts_h.T).T
-    return transformed[:, :2] / transformed[:, 2:3]
+    
+    # Avoid division by zero
+    w = transformed[:, 2:3]
+    w = np.where(np.abs(w) < 1e-8, 1e-8, w)  # Replace near-zero with small value
+    
+    return transformed[:, :2] / w
 
 def compute_reprojection_error(H, src, dst):
     """Compute reprojection error for all points."""
@@ -43,13 +48,58 @@ def compute_reprojection_error(H, src, dst):
     errors = np.sqrt(np.sum((projected - dst)**2, axis=1))
     return errors
 
-def ran_sac(src_pts, dst_pts):
+def is_valid_homography(H, max_scale=3.0):
+    """
+    Check if homography is geometrically reasonable.
+    Rejects degenerate or unrealistic transformations.
+    """
+    if H is None:
+        return False
+    
+    # Normalize
+    H = H / H[2, 2]
+    
+    # Check if bottom-right is positive (proper normalization)
+    if H[2, 2] <= 0:
+        return False
+    
+    # Extract affine part (top-left 2x2)
+    A = H[:2, :2]
+    
+    # Compute SVD to get scales
+    try:
+        U, s, Vt = np.linalg.svd(A)
+    except:
+        return False
+    
+    # Check scales (singular values)
+    if s[0] / s[1] > max_scale or s[1] / s[0] > max_scale:
+        return False  # Too much anisotropic scaling
+    
+    if s[0] > max_scale or s[0] < 1.0 / max_scale:
+        return False  # Scale too extreme
+    
+    if s[1] > max_scale or s[1] < 1.0 / max_scale:
+        return False  # Scale too extreme
+    
+    # Check determinant (negative = reflection, not allowed for logos)
+    det = np.linalg.det(A)
+    if det < 0:
+        return False  # Reflection/mirroring
+    
+    # Check perspective distortion (bottom row should be small)
+    if abs(H[2, 0]) > 0.002 or abs(H[2, 1]) > 0.002:
+        return False  # Too much perspective
+    
+    return True
+
+def ran_sac(src_pts, dst_pts, threshold=5.0, max_iters=2000, confidence=0.99):
     """
     Find homography using RANSAC algorithm.
     
     Args:
-        src_pts: Source points (Nx2)
-        dst_pts: Destination points (Nx2)
+        src_pts: Source points (Nx2) or (Nx1x2) - OpenCV format compatible
+        dst_pts: Destination points (Nx2) or (Nx1x2) - OpenCV format compatible
         threshold: RANSAC inlier threshold in pixels
         max_iters: Maximum RANSAC iterations
         confidence: Desired confidence level
@@ -58,9 +108,11 @@ def ran_sac(src_pts, dst_pts):
         H: 3x3 homography matrix
         mask: Boolean array indicating inliers
     """
-    src_pts = src_pts.reshape(-1, 2)
-    dst_pts = dst_pts.reshape(-1, 2)
-
+    # Handle OpenCV format (N, 1, 2) -> reshape to (N, 2)
+    if src_pts.ndim == 3 and src_pts.shape[1] == 1:
+        src_pts = src_pts.reshape(-1, 2)
+    if dst_pts.ndim == 3 and dst_pts.shape[1] == 1:
+        dst_pts = dst_pts.reshape(-1, 2)
     
     n_pts = len(src_pts)
     if n_pts < 4:
@@ -78,9 +130,7 @@ def ran_sac(src_pts, dst_pts):
     best_count = 0
     
     # Adaptive RANSAC
-    n_iters = 2000
-    threshold = 5.0
-    confidence = 0.99
+    n_iters = max_iters
     iter_count = 0
     
     while iter_count < n_iters:
@@ -96,8 +146,17 @@ def ran_sac(src_pts, dst_pts):
             iter_count += 1
             continue
         
-        # Find inliers
-        errors = compute_reprojection_error(H_norm, src_norm, dst_norm)
+        # Denormalize homography to test in original space
+        H_test = np.linalg.inv(T_dst) @ H_norm @ T_src
+        H_test = H_test / H_test[2, 2]
+
+        # Validate homography before testing (reject degenerate cases)
+        if not is_valid_homography(H_test):
+            iter_count += 1
+            continue
+        
+        # Find inliers in ORIGINAL space (not normalized)
+        errors = compute_reprojection_error(H_test, src_pts, dst_pts)
         inliers = errors < threshold
         n_inliers = np.sum(inliers)
         
@@ -105,11 +164,12 @@ def ran_sac(src_pts, dst_pts):
         if n_inliers > best_count:
             best_count = n_inliers
             best_inliers = inliers
-            best_H = H_norm
-            print(f"Iteration {iter_count}: New best model with {best_count} inliers")
+            best_H = H_test  # Store the denormalized homography!
+            
             # Update number of iterations adaptively
             inlier_ratio = n_inliers / n_pts
-            if inlier_ratio > 0 and inlier_ratio < 1:
+            # Avoid log(0) when inlier_ratio is very close to 1
+            if inlier_ratio > 0 and inlier_ratio < 0.9999:
                 n_iters = min(n_iters, 
                              int(np.log(1 - confidence) / 
                                  np.log(1 - inlier_ratio**4)))
@@ -119,8 +179,13 @@ def ran_sac(src_pts, dst_pts):
     if best_H is None:
         return None, np.zeros(n_pts, dtype=bool)
     
+    # Final validation of best homography
+    if not is_valid_homography(best_H):
+        return None, np.zeros(n_pts, dtype=bool)
+    
     # Refine using all inliers
     if best_count >= 4:
+        # Use inliers in NORMALIZED space for refinement
         src_inliers = src_norm[best_inliers]
         dst_inliers = dst_norm[best_inliers]
         
@@ -135,15 +200,19 @@ def ran_sac(src_pts, dst_pts):
         A = np.array(A)
         _, _, Vt = np.linalg.svd(A)
         H_refined = Vt[-1].reshape(3, 3)
-        H_refined = H_refined / H_refined[2, 2]
         
-        # Denormalize
-        H_final = np.linalg.inv(T_dst) @ H_refined @ T_src
-        H_final = H_final / H_final[2, 2]
+        if abs(H_refined[2, 2]) > 1e-8:
+            H_refined = H_refined / H_refined[2, 2]
+            
+            # Denormalize
+            H_final = np.linalg.inv(T_dst) @ H_refined @ T_src
+            H_final = H_final / H_final[2, 2]
+        else:
+            # Refinement failed, use best_H from RANSAC
+            H_final = best_H
     else:
-        H_final = np.linalg.inv(T_dst) @ best_H @ T_src
-        H_final = H_final / H_final[2, 2]
+        # Not enough inliers, use best_H from RANSAC
+        H_final = best_H
     
     return H_final, best_inliers
-
 
