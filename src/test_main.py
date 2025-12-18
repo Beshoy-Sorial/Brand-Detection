@@ -2,7 +2,8 @@ import socket
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5555
-IMAGE_PATH = "../Cloth/nike_shirt1.png"
+IMAGE_PATH = "../Cloth/a3.png"
+
 
 def send_image(image_path):
     # Read image as raw bytes
@@ -37,6 +38,7 @@ def send_image(image_path):
 
     finally:
         client.close()
+
 
 if __name__ == "__main__":
     send_image(IMAGE_PATH)
