@@ -2,7 +2,7 @@ import socket
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5555
-IMAGE_PATH = "../Cloth/a3.png"
+IMAGE_PATH = "../Cloth/nike_shirt5.png"
 
 
 def send_image(image_path):
@@ -16,6 +16,7 @@ def send_image(image_path):
 
     # Create socket
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.settimeout(None)
     client.connect((SERVER_IP, SERVER_PORT))
 
     try:
