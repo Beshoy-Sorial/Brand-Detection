@@ -72,6 +72,10 @@ def is_valid_homography(H, max_scale=3.0):
     except:
         return False
     
+    # Check for degenerate transformation (zero singular values)
+    if s[0] < 1e-6 or s[1] < 1e-6:
+        return False  # Degenerate transformation
+    
     # Check scales (singular values)
     if s[0] / s[1] > max_scale or s[1] / s[0] > max_scale:
         return False  # Too much anisotropic scaling
