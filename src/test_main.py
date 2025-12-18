@@ -2,7 +2,7 @@ import socket
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5555
-IMAGE_PATH = "../Cloth/a1.png"
+IMAGE_PATH = "../Cloth/nike_shirt1.png"
 
 def send_image(image_path):
     # Read image as raw bytes
