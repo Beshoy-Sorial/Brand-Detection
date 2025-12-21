@@ -9,30 +9,10 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   bool _isProcessing = false;
   String? _result;
   String? _imagePath;
-  AnimationController? _animationController;
-  Animation<double>? _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController!, curve: Curves.easeIn),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,28 +70,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     SizedBox(height: 32),
 
                     // Image Preview
-                    if (_imagePath != null && _fadeAnimation != null)
-                      FadeTransition(
-                        opacity: _fadeAnimation!,
-                        child: Container(
-                          height: 250,
-                          margin: EdgeInsets.only(bottom: 24),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.file(
-                              File(_imagePath!),
-                              fit: BoxFit.cover,
+                    if (_imagePath != null)
+                      Container(
+                        height: 250,
+                        margin: EdgeInsets.only(bottom: 24),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
                             ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(
+                            File(_imagePath!),
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -165,66 +142,63 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
 
                     // Result Display
-                    if (_result != null && !_isProcessing && _fadeAnimation != null)
-                      FadeTransition(
-                        opacity: _fadeAnimation!,
-                        child: Container(
-                          padding: EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: _result!.contains('ERROR')
-                                  ? [Colors.red[50]!, Colors.red[100]!]
-                                  : [Colors.blue[50]!, Colors.blue[100]!],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                    if (_result != null && !_isProcessing)
+                      Container(
+                        padding: EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: _result!.contains('ERROR')
+                                ? [Colors.red[50]!, Colors.red[100]!]
+                                : [Colors.blue[50]!, Colors.blue[100]!],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    _result!.contains('ERROR')
-                                        ? Icons.error_outline
-                                        : Icons.check_circle_outline,
-                                    color: _result!.contains('ERROR')
-                                        ? Colors.red[700]
-                                        : Colors.blue[700],
-                                    size: 28,
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Verification Result',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _result!.contains('ERROR')
+                                      ? Icons.error_outline
+                                      : Icons.check_circle_outline,
+                                  color: _result!.contains('ERROR')
+                                      ? Colors.red[700]
+                                      : Colors.blue[700],
+                                  size: 28,
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Verification Result',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                _result!,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black87,
-                                  height: 1.5,
                                 ),
+                              ],
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              _result!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                                height: 1.5,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 
@@ -342,34 +316,32 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Future<void> processAndSendImage(XFile image) async {
+    print('=== Starting processAndSendImage ===');
     setState(() {
       _isProcessing = true;
       _result = null;
       _imagePath = image.path;
     });
-
-    // Start animation after a small delay to ensure state is updated
-    Future.delayed(Duration(milliseconds: 50), () {
-      _animationController?.forward(from: 0.0);
-    });
+    print('State updated: _isProcessing = true, _imagePath = ${image.path}');
 
     try {
       final imageBytes = await image.readAsBytes();
       print('Image size: ${imageBytes.length} bytes');
 
+      print('Calling SocketService.sendImageToServer...');
       final result = await SocketService.sendImageToServer(imageBytes);
+      print('Received result from server (length: ${result.length})');
+      print('Result content: "$result"');
 
       setState(() {
         _result = result;
         _isProcessing = false;
       });
+      print('State updated: _result = "$_result", _isProcessing = false');
 
-      // Trigger animation for result display
-      _animationController?.forward(from: 0.0);
-
-      // Don't show success toast - result stays on screen
-    } catch (e) {
-      print('Error: $e');
+    } catch (e, stackTrace) {
+      print('!!! Error caught: $e');
+      print('Stack trace: $stackTrace');
       
       String errorMessage = e.toString();
       if (errorMessage.contains('TimeoutException')) {
@@ -382,10 +354,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         _result = "ERROR: $errorMessage";
         _isProcessing = false;
       });
-
-      // Trigger animation for error display
-      _animationController?.forward(from: 0.0);
+      print('Error state updated: $_result');
     }
+    print('=== Finished processAndSendImage ===');
   }
 
   Future<XFile?> pickImageFromGallery() async {

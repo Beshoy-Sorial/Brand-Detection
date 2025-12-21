@@ -3,16 +3,10 @@ from matplotlib import image
 def dilate(image, kernel_size=(5, 5), iterations=2):
     """
     Perform binary dilation manually (without cv2.dilate).
-
-    Parameters:
-        image (np.ndarray): Binary image (0 or 255)
-        kernel_size (tuple): Structuring element size
-        iterations (int): Number of dilation iterations
-
-    Returns:
-        np.ndarray: Dilated image
     """
     img = image.copy()
+    if len(img.shape) == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     kh, kw = kernel_size
     pad_h, pad_w = kh // 2, kw // 2
 
@@ -55,6 +49,8 @@ def erode(image, kernel_size=(5, 5), iterations=2):
     Perform erosion manually without using cv2.erode.
     """
     img = image.copy()
+    if len(img.shape) == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     kh, kw = kernel_size
     pad_h, pad_w = kh // 2, kw // 2
 
