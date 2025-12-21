@@ -116,7 +116,7 @@ def get_area(contour):
     for i in range(n):
         x1, y1 = contour[i]
         x2, y2 = contour[(i + 1) % n]
-        area += x1 * y2 - x2 * y1
+        area += x1 * y2 - x2 * y1 
 
     return abs(area) / 2.0
     # return cv2.contourArea(contour)
