@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:io';
+import 'dart:convert';
 
 class SocketService {
-  // Change this to your computer's IP address
-  static const String serverHost = '127.0.0.1'; // Replace with YOUR computer's IP
+  static const String serverHost = '127.0.0.1';
   static const int serverPort = 5555;
   
   /// Send image bytes to Python backend and receive result
@@ -23,34 +23,56 @@ class SocketService {
       
       print('Connected to server');
       
+      // Create a completer to handle the async response
+      final completer = Completer<String>();
+      final responseBuffer = <int>[];
+      
+      // Set up listener BEFORE sending data
+      socket.listen(
+        (data) {
+          responseBuffer.addAll(data);
+          print('Received ${data.length} bytes from server (total: ${responseBuffer.length})');
+        },
+        onDone: () {
+          print('Server closed connection');
+          if (!completer.isCompleted) {
+            if (responseBuffer.isEmpty) {
+              completer.completeError(Exception('No response received from server'));
+            } else {
+              final result = String.fromCharCodes(responseBuffer);
+              completer.complete(result);
+            }
+          }
+        },
+        onError: (error) {
+          print('Socket error in listener: $error');
+          if (!completer.isCompleted) {
+            completer.completeError(Exception('Socket error: $error'));
+          }
+        },
+        cancelOnError: true,
+      );
+      
+      // Send length prefix (4 bytes, big endian)
+      final lengthBytes = ByteData(4);
+      lengthBytes.setUint32(0, imageBytes.length, Endian.big);
+      socket.add(lengthBytes.buffer.asUint8List());
+      
       // Send image bytes
       print('Sending image (${imageBytes.length} bytes)...');
       socket.add(imageBytes);
       await socket.flush();
-      
-      // Close the write side to signal we're done sending
-      await socket.close();
+      print('Data sent, waiting for response...');
       
       print('Waiting for response...');
       
-      // Receive response with timeout
-      final responseBytes = await socket.timeout(
-        Duration(minutes: 5, seconds: 30),
-        onTimeout: (sink) {
-          sink.close();
+      // Wait for response with longer timeout (5 minutes)
+      final result = await completer.future.timeout(
+        Duration(minutes: 5),
+        onTimeout: () {
           throw TimeoutException('Server took too long to respond (>5 minutes)');
         },
-      ).fold<List<int>>(
-        <int>[],
-        (previous, element) => previous..addAll(element),
       );
-      
-      if (responseBytes.isEmpty) {
-        throw Exception('No response received from server');
-      }
-      
-      // Convert response bytes to string
-      final result = String.fromCharCodes(responseBytes);
       
       print('Successfully received result (${result.length} chars)');
       
