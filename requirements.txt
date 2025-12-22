@@ -1,0 +1,10 @@
+numpy>=1.24
+matplotlib>=3.7
+opencv-python>=4.8
+Pillow>=10.0
+numba>=0.59
+torch>=2.1
+torchvision>=0.16
+transformers>=4.35
+safetensors>=0.4
+pathlib
