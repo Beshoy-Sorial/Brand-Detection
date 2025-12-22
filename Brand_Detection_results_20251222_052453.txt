@@ -16,3 +16,4 @@ File: Puma_Shirt2.png | Got: Puma | Status: CORRECT
 File: Puma_Shirt3.png | Got: Puma | Status: CORRECT
 File: Puma_Shirt4.png | Got: UNKNOWN BRAND | Status: FAILED
 File: Puma_Shirt5.png | Got: Nike | Status: FAILED
+File: Puma_Shoes1.png | Got: UNKNOWN BRAND | Status: FAILED
