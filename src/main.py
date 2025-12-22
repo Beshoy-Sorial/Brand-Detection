@@ -5,7 +5,6 @@ import numpy as np
 import socket
 import threading
 import logo_verifer
-import struct
 
 descriptores = {}
 
@@ -23,32 +22,25 @@ def load_logos(base_folder: str):
     return logos_dict
 
 
-def recv_exact(sock, num_bytes):
-    """Receive exactly num_bytes from socket"""
-    data = b""
-    while len(data) < num_bytes:
-        chunk = sock.recv(num_bytes - len(data))
-        if not chunk:
-            raise ConnectionError("Connection closed before receiving all data")
-        data += chunk
-    return data
-
-
 def handle_client(conn, addr):
     """Handle individual client connection in a separate thread"""
     print(f"Connection from {addr}")
 
+    img_bytes = b""
+
     try:
-        # Read length prefix (4 bytes, big endian)
-        print("Reading length prefix...")
-        length_data = recv_exact(conn, 4)
-        image_length = struct.unpack('>I', length_data)[0]
-        print(f"Expecting image of {image_length} bytes")
-        
-        # Receive exact amount of image data
-        print("Reading image data...")
-        img_bytes = recv_exact(conn, image_length)
+        while True:
+
+            data = conn.recv(4096)
+            if not data:
+                break
+            img_bytes += data
+
         print(f"Received {len(img_bytes)} bytes from {addr}")
+        if not img_bytes:
+            print(f"No data received from {addr}")
+            conn.sendall(b"ERROR: No data received")
+            return
 
         # Decode image
         print("Decoding image...")
@@ -59,27 +51,24 @@ def handle_client(conn, addr):
             print("Could not decode the image!")
             conn.sendall(b"ERROR: Could not decode image")
             return
-        
-        print("Processing image...")
+        conn.sendall(b"PROCESSING\n")
         result = logo_verifer.verify_logo(cloth, descriptores)
-        
-        # Send result
-        print(f"Sending result: {result[:100] if len(result) > 100 else result}")
-        result_bytes = result.encode("utf-8")
-        conn.sendall(result_bytes)
-        print(f"Result sent successfully ({len(result_bytes)} bytes)")
+
+        send_result(conn, result)
 
     except Exception as e:
         print(f"Error handling client {addr}: {e}")
-        import traceback
-        traceback.print_exc()
         try:
             conn.sendall(f"ERROR: {str(e)}".encode("utf-8"))
         except:
             pass
     finally:
-        print(f"Closing connection with {addr}")
         conn.close()
+        print(f"Connection closed with {addr}")
+
+
+def send_result(conn, result_message):
+    conn.sendall(result_message.encode("utf-8"))
 
 
 if __name__ == "__main__":
@@ -110,9 +99,12 @@ if __name__ == "__main__":
 
     try:
         while True:
+            # Accept new connection
             conn, addr = server.accept()
+
+            # Spawn a new thread to handle this client
             client_thread = threading.Thread(target=handle_client, args=(conn, addr))
-            client_thread.daemon = True
+            client_thread.daemon = True  # Thread will close when main program exits
             client_thread.start()
 
     except KeyboardInterrupt:

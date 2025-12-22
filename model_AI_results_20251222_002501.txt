@@ -1,0 +1,110 @@
+================================================================================
+DNN BRAND DETECTION (Threshold: 0)
+Date: 20251222_002501 | Device: cpu
+================================================================================
+
+SECTION: FAKE PHOTOS
+----------------------------------------
+addidas_shirt1.png                  -> Pred: mashreq      (56.51%) | CORRECT
+addidas_shirt2.png                  -> Pred: adidas       (99.76%) | FAILED
+addidas_shirt3.jpg                  -> Pred: adidas       (99.78%) | FAILED
+addidas_shirt4.png                  -> Pred: adidas       (72.50%) | FAILED
+addidas_shirt5.jpg                  -> Pred: adidas       (99.37%) | FAILED
+addidas_shirt6.jpg                  -> Pred: aldar        (32.59%) | CORRECT
+addidas_shirt9.png                  -> Pred: adidas       (42.22%) | FAILED
+addidas_shoe1.jpg                   -> Pred: adidas       (55.84%) | FAILED
+addidas_shoe2.png                   -> Pred: tesla        (94.94%) | CORRECT
+addidas_shoe3.png                   -> Pred: adidas       (99.60%) | FAILED
+addidas_shoe5.jpg                   -> Pred: nvidia       (99.44%) | CORRECT
+addidas_shoes4.png                  -> Pred: linkedin     (80.90%) | CORRECT
+fake1.png                           -> Pred: meta         (13.68%) | CORRECT
+fake_nike_1.png                     -> Pred: nike         (99.57%) | FAILED
+fake_nike_2.png                     -> Pred: nike         (94.05%) | FAILED
+fake_nike_3.png                     -> Pred: nike         (99.31%) | FAILED
+fake_nike_4.png                     -> Pred: coke         (83.55%) | CORRECT
+fake_nike_5.png                     -> Pred: nike         (95.21%) | FAILED
+Nike_Shoes1.png                     -> Pred: nike         (99.72%) | FAILED
+nike_shoes2.png                     -> Pred: snapdragon   (8.61%) | CORRECT
+Nike_Shoes3.png                     -> Pred: nike         (21.85%) | FAILED
+Nike_Shoes4.png                     -> Pred: snapdragon   (59.78%) | CORRECT
+Nike_Shoes5.png                     -> Pred: nike         (89.32%) | FAILED
+Puma_Shoes1.png                     -> Pred: puma         (84.29%) | FAILED
+puma_shoes2.png                     -> Pred: linkedin     (29.73%) | CORRECT
+Puma_Shoes3.png                     -> Pred: hilti        (15.87%) | CORRECT
+
+SECTION: REAL PHOTOS
+----------------------------------------
+
+[ADDIDAS]
+addidas_shirt1.png                  -> Pred: adidas       (41.71%) | CORRECT
+addidas_shirt10.png                 -> Pred: adidas       (98.60%) | CORRECT
+addidas_shirt11.png                 -> Pred: rakez        (13.39%) | FAILED
+addidas_shirt12.png                 -> Pred: adidas       (95.27%) | CORRECT
+addidas_shirt2.jpg                  -> Pred: adidas       (98.50%) | CORRECT
+addidas_shirt3.png                  -> Pred: adidas       (27.00%) | CORRECT
+addidas_shirt4.png                  -> Pred: adidas       (99.69%) | CORRECT
+addidas_shirt5.jpg                  -> Pred: adidas       (98.93%) | CORRECT
+addidas_shirt6.jpg                  -> Pred: adidas       (57.91%) | CORRECT
+addidas_shirt7.png                  -> Pred: adidas       (93.30%) | CORRECT
+addidas_shoe1.png                   -> Pred: linkedin     (50.49%) | FAILED
+addidas_shoe10.png                  -> Pred: linkedin     (61.57%) | FAILED
+addidas_shoe11.png                  -> Pred: hilti        (27.15%) | FAILED
+addidas_shoe2.png                   -> Pred: nike         (31.60%) | FAILED
+addidas_shoe3.png                   -> Pred: linkedin     (98.68%) | FAILED
+addidas_shoe4.jpg                   -> Pred: adidas       (13.86%) | CORRECT
+addidas_shoe5.jpg                   -> Pred: msi          (10.38%) | FAILED
+addidas_shoe6.png                   -> Pred: msi          (21.85%) | FAILED
+addidas_shoe7.jpg                   -> Pred: puma         (54.91%) | FAILED
+addidas_shoe8.jpg                   -> Pred: linkedin     (99.70%) | FAILED
+addidas_shoe9.png                   -> Pred: adnoc        (30.20%) | FAILED
+adidas_0.png                        -> Pred: careem       (34.48%) | FAILED
+adidas_01.png                       -> Pred: hec          (53.07%) | FAILED
+adidas_02.png                       -> Pred: hec          (24.74%) | FAILED
+adidas_03.png                       -> Pred: hec          (35.84%) | FAILED
+
+[NIKE]
+1.png                               -> Pred: linkedin     (20.45%) | FAILED
+2.png                               -> Pred: gopro        (34.23%) | FAILED
+3.png                               -> Pred: nike         (96.11%) | CORRECT
+4.png                               -> Pred: nike         (52.72%) | CORRECT
+5.png                               -> Pred: hec          (51.18%) | FAILED
+6.png                               -> Pred: tesla        (24.38%) | FAILED
+nike_00.png                         -> Pred: nike         (98.94%) | CORRECT
+nike_01.png                         -> Pred: meta         (97.69%) | FAILED
+nike_02.png                         -> Pred: snapdragon   (72.98%) | FAILED
+nike_03.png                         -> Pred: linkedin     (67.53%) | FAILED
+nike_04.png                         -> Pred: nike         (96.26%) | CORRECT
+nike_shirt1.png                     -> Pred: nike         (22.22%) | CORRECT
+nike_shirt2.png                     -> Pred: nike         (84.14%) | CORRECT
+nike_shirt3.png                     -> Pred: hec          (55.87%) | FAILED
+nike_shirt4.png                     -> Pred: hec          (33.61%) | FAILED
+nike_shirt5.png                     -> Pred: puma         (27.13%) | FAILED
+nike_shirt6.png                     -> Pred: hec          (56.20%) | FAILED
+nike_shirt7.png                     -> Pred: nike         (99.76%) | CORRECT
+Nike_Shoes1.png                     -> Pred: nike         (98.53%) | CORRECT
+Nike_Shoes2.png                     -> Pred: nike         (90.72%) | CORRECT
+Nike_Shoes3.png                     -> Pred: nike         (99.81%) | CORRECT
+Nike_Shoes4.png                     -> Pred: nike         (80.94%) | CORRECT
+Nike_Shoes5.png                     -> Pred: snapdragon   (56.28%) | FAILED
+Nike_Shoes6.png                     -> Pred: nike         (55.74%) | CORRECT
+
+[PUMA]
+puma_01.png                         -> Pred: gopro        (45.92%) | FAILED
+puma_02.png                         -> Pred: hilti        (25.19%) | FAILED
+puma_03.png                         -> Pred: hilti        (31.58%) | FAILED
+puma_04.png                         -> Pred: linkedin     (15.30%) | FAILED
+puma_05.png                         -> Pred: apple        (15.65%) | FAILED
+Puma_Shirt1.png                     -> Pred: puma         (99.72%) | CORRECT
+Puma_Shirt2.png                     -> Pred: puma         (95.21%) | CORRECT
+Puma_Shirt3.png                     -> Pred: puma         (99.61%) | CORRECT
+Puma_Shirt4.png                     -> Pred: puma         (95.18%) | CORRECT
+Puma_Shirt5.png                     -> Pred: hec          (66.05%) | FAILED
+Puma_Shoes1.png                     -> Pred: puma         (99.66%) | CORRECT
+Puma_Shoes2.png                     -> Pred: puma         (28.00%) | CORRECT
+Puma_Shoes3.png                     -> Pred: puma         (59.44%) | CORRECT
+SUMMARY (Threshold: 0)
+Total Files:      88
+Corrupt Files:    0
+Valid Processed:  88
+Correct:          40
+Accuracy:         45.45%

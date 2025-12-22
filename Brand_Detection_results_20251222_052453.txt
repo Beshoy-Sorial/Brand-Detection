@@ -1,0 +1,18 @@
+================================================================================
+BRAND DETECTION TEST RESULTS
+Test Date: 2025-12-22 05:24:53
+================================================================================
+
+
+BRAND CATEGORY: PUMA
+----------------------------------------
+File: puma_01.png | Got: Puma | Status: CORRECT
+File: puma_02.png | Got: UNKNOWN BRAND | Status: FAILED
+File: puma_03.png | Got: Puma | Status: CORRECT
+File: puma_04.png | Got: Nike | Status: FAILED
+File: puma_05.png | Got: UNKNOWN BRAND | Status: FAILED
+File: Puma_Shirt1.png | Got: Puma | Status: CORRECT
+File: Puma_Shirt2.png | Got: Puma | Status: CORRECT
+File: Puma_Shirt3.png | Got: Puma | Status: CORRECT
+File: Puma_Shirt4.png | Got: UNKNOWN BRAND | Status: FAILED
+File: Puma_Shirt5.png | Got: Nike | Status: FAILED
