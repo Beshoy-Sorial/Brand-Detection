@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Threshold configuration
 MIN_MATCH_COUNT = 4  # Minimum matches needed for homography
-BRAND_CONFIDENCE_THRESHOLD = 18  # Minimum good matches to classify as a known brand
+BRAND_CONFIDENCE_THRESHOLD = 15  # Minimum good matches to classify as a known brand
 
 # Contour extraction parameters
 MIN_CONTOUR_AREA = 500  # Minimum area for a contour to be considered

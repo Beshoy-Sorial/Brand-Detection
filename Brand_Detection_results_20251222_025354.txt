@@ -95,3 +95,10 @@ File: Puma_Shirt5.png | Got: Nike | Status: FAILED
 File: Puma_Shoes1.png | Got: UNKNOWN BRAND | Status: FAILED
 File: Puma_Shoes2.png | Got: UNKNOWN BRAND | Status: FAILED
 File: Puma_Shoes3.png | Got: Puma | Status: CORRECT
+
+================================================================================
+SUMMARY
+================================================================================
+Total: 13
+Correct: 6
+Accuracy: 48.1%
